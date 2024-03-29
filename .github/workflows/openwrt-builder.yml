@@ -104,7 +104,8 @@ jobs:
         };
         ' >> target/linux/mediatek/files-6.1/arch/arm64/boot/dts/mediatek/mt7988a-bananapi-bpi-r4.dts
         
-        printf '--- build_dir/target-aarch64_cortex-a53_musl/linux-mediatek_filogic/linux-6.1.82/drivers/pwm/pwm-mediatek.c\t2024-03-25 17:50:57.303847248 -0700
+        printf '
+        --- build_dir/target-aarch64_cortex-a53_musl/linux-mediatek_filogic/linux-6.1.82/drivers/pwm/pwm-mediatek.c\t2024-03-25 17:50:57.303847248 -0700
         +++ build_dir/target-aarch64_cortex-a53_musl/linux-mediatek_filogic/linux-6.1.82/drivers/pwm/pwm-mediatek.c\t2024-03-25 17:54:04.349927891 -0700
         @@ -60,7 +60,7 @@
          };
