@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
@@ -86,6 +86,120 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        
+    - name: Make a patch
+      id: patch
+      run: |
+        cd openwrt
+        printf '
+        &fan {
+        \tpwms = <&pwm 0 50000 0>;
+        \tstatus = "okay";
+        };
+        
+        &pwm {
+        \t//pinctrl-names = "default";
+        \t//pinctrl-0 = <&pwm_pins>;
+        \tstatus = "okay";
+        };
+        ' >> target/linux/mediatek/files-6.1/arch/arm64/boot/dts/mediatek/mt7988a-bananapi-bpi-r4.dts
+        
+        printf '--- build_dir/target-aarch64_cortex-a53_musl/linux-mediatek_filogic/linux-6.1.82/drivers/pwm/pwm-mediatek.c\t2024-03-25 17:50:57.303847248 -0700
+        +++ build_dir/target-aarch64_cortex-a53_musl/linux-mediatek_filogic/linux-6.1.82/drivers/pwm/pwm-mediatek.c\t2024-03-25 17:54:04.349927891 -0700
+        @@ -60,7 +60,7 @@
+         };
+         
+         static const unsigned int pwm_mediatek_reg_offset[] = {
+        -\t0x0010, 0x0050, 0x0090, 0x00d0, 0x0110, 0x0150, 0x0190, 0x0220
+        +\t0x0080, 0x00c0, 0x0100, 0x0140, 0x0180, 0x01c0, 0x0200, 0x0240
+         };
+         
+         static inline struct pwm_mediatek_chip *
+        @@ -281,77 +281,14 @@
+         \treturn 0;
+         }
+         
+        -static const struct pwm_mediatek_of_data mt2712_pwm_data = {
+        +static const struct pwm_mediatek_of_data mt7988_pwm_data = {
+         \t.num_pwms = 8,
+         \t.pwm45_fixup = false,
+         \t.has_ck_26m_sel = false,
+         };
+         
+        -static const struct pwm_mediatek_of_data mt6795_pwm_data = {
+        -\t.num_pwms = 7,
+        -\t.pwm45_fixup = false,
+        -\t.has_ck_26m_sel = false,
+        -};
+        -
+        -static const struct pwm_mediatek_of_data mt7622_pwm_data = {
+        -\t.num_pwms = 6,
+        -\t.pwm45_fixup = false,
+        -\t.has_ck_26m_sel = true,
+        -};
+        -
+        -static const struct pwm_mediatek_of_data mt7623_pwm_data = {
+        -\t.num_pwms = 5,
+        -\t.pwm45_fixup = true,
+        -\t.has_ck_26m_sel = false,
+        -};
+        -
+        -static const struct pwm_mediatek_of_data mt7628_pwm_data = {
+        -\t.num_pwms = 4,
+        -\t.pwm45_fixup = true,
+        -\t.has_ck_26m_sel = false,
+        -};
+        -
+        -static const struct pwm_mediatek_of_data mt7629_pwm_data = {
+        -\t.num_pwms = 1,
+        -\t.pwm45_fixup = false,
+        -\t.has_ck_26m_sel = false,
+        -};
+        -
+        -static const struct pwm_mediatek_of_data mt8183_pwm_data = {
+        -\t.num_pwms = 4,
+        -\t.pwm45_fixup = false,
+        -\t.has_ck_26m_sel = true,
+        -};
+        -
+        -static const struct pwm_mediatek_of_data mt8365_pwm_data = {
+        -\t.num_pwms = 3,
+        -\t.pwm45_fixup = false,
+        -\t.has_ck_26m_sel = true,
+        -};
+        -
+        -static const struct pwm_mediatek_of_data mt7986_pwm_data = {
+        -\t.num_pwms = 2,
+        -\t.pwm45_fixup = false,
+        -\t.has_ck_26m_sel = true,
+        -};
+        -
+        -static const struct pwm_mediatek_of_data mt8516_pwm_data = {
+        -\t.num_pwms = 5,
+        -\t.pwm45_fixup = false,
+        -\t.has_ck_26m_sel = true,
+        -};
+        -
+         static const struct of_device_id pwm_mediatek_of_match[] = {
+        -\t{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
+        -\t{ .compatible = "mediatek,mt6795-pwm", .data = &mt6795_pwm_data },
+        -\t{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
+        -\t{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
+        -\t{ .compatible = "mediatek,mt7628-pwm", .data = &mt7628_pwm_data },
+        -\t{ .compatible = "mediatek,mt7629-pwm", .data = &mt7629_pwm_data },
+        -\t{ .compatible = "mediatek,mt7986-pwm", .data = &mt7986_pwm_data },
+        -\t{ .compatible = "mediatek,mt8183-pwm", .data = &mt8183_pwm_data },
+        -\t{ .compatible = "mediatek,mt8365-pwm", .data = &mt8365_pwm_data },
+        -\t{ .compatible = "mediatek,mt8516-pwm", .data = &mt8516_pwm_data },
+        +\t{ .compatible = "mediatek,mt7988-pwm", .data = &mt7988_pwm_data },
+         \t{ },
+         };
+         MODULE_DEVICE_TABLE(of, pwm_mediatek_of_match);
+        ' > /tmp/pwm-mediatek.c.patch
+
+        patch build_dir/target-aarch64_cortex-a53_musl/linux-mediatek_filogic/linux-6.1.82/drivers/pwm/pwm-mediatek.c < /tmp/pwm-mediatek.c.patch
+
+
 
     - name: Compile the firmware
       id: compile
