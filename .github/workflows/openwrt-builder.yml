@@ -78,14 +78,11 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: Download package
-      id: package
+    - name: Make toolchain
+      id: toolchain
       run: |
         cd openwrt
-        make defconfig
-        make download -j8
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        make -j $(nproc) toolchain/{clean,install}
         
     - name: Make a patch
       id: patch
@@ -197,9 +194,9 @@ jobs:
          };
          MODULE_DEVICE_TABLE(of, pwm_mediatek_of_match);
         ' > /tmp/pwm-mediatek.c.patch
-
+        make -j $(nproc) target/linux/{prereq,clean,download,prepare}
         patch build_dir/target-aarch64_cortex-a53_musl/linux-mediatek_filogic/linux-6.1.82/drivers/pwm/pwm-mediatek.c < /tmp/pwm-mediatek.c.patch
-
+        make -j $(nproc) target/linux/compile
 
 
     - name: Compile the firmware
@@ -207,7 +204,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        #make -j$(nproc) || make -j1 || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
