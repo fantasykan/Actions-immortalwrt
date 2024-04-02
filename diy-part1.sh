@@ -17,10 +17,5 @@
 echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 
-printf '
-src-git packages https://git.openwrt.org/feed/packages.git
-src-git luci https://git.openwrt.org/project/luci.git
-src-git routing https://git.openwrt.org/feed/routing.git
-src-git telephony https://git.openwrt.org/feed/telephony.git
-src-git kiddin9_packages https://github.com/kiddin9/openwrt-packages.git
-' > feeds.conf.default
+sed -i '$a src-git smpackage https://github.com/kenzok8/small-package' feeds.conf.default
+
