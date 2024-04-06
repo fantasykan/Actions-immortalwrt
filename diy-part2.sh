@@ -18,3 +18,7 @@
 
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
+
+./script/feed uninstall luci-app-openvpn-server
+./script/feed install -p kiddin9 luci-app-openvpn-server
+
