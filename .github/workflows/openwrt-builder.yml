@@ -74,7 +74,6 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        [ -e Makefile_openvpn-server ] && mv Makefile_openvpn-server openwrt/package/feeds/smpackage/luci-app-openvpn-server/Makefile
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
