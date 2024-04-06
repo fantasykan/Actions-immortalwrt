@@ -18,5 +18,3 @@
 
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
-
-cat package/feeds/smpackage/luci-app-openvpn-server/Makefile
