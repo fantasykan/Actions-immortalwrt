@@ -21,11 +21,11 @@
 #sed -i '2i src-git small https://github.com/kenzok8/small' feeds.conf.default
 #git pull
 
-#printf '
-#src-git packages https://github.com/immortalwrt/packages.git
-#src-git luci https://github.com/immortalwrt/luci.git
-#src-git routing https://github.com/openwrt/routing.git
-#src-git telephony https://github.com/openwrt/telephony.git
+printf '
+src-git packages https://github.com/immortalwrt/packages.git
+src-git luci https://github.com/immortalwrt/luci.git
+src-git routing https://github.com/openwrt/routing.git
+src-git telephony https://github.com/openwrt/telephony.git
 #src-git-full video https://github.com/openwrt/video.git
 #src-git-full targets https://github.com/openwrt/targets.git
 #src-git-full oldpackages http://git.openwrt.org/packages.git
@@ -33,6 +33,6 @@
 #src-git smpackage https://github.com/kenzok8/small-package
 #' > feeds.conf.default
 
-#sed -i '$a src-git smpackage https://github.com/kenzok8/small-package' feeds.conf.default
-sed -i '$a src-git kiddin9 https://github.com/kiddin9/openwrt-packages.git' feeds.conf.default
+sed -i '$a src-git smpackage https://github.com/kenzok8/small-package' feeds.conf.default
+#sed -i '$a src-git kiddin9 https://github.com/kiddin9/openwrt-packages.git' feeds.conf.default
 
